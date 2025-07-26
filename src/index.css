@@ -1,0 +1,39 @@
+:root {
+  --color-bg-main: #10002B;
+  --color-bg-card: #240046;
+  --color-violet-dark: #3C096C;
+  --color-violet: #5A189A;
+  --color-violet-light: #7B2CBF;
+  --color-violet-bright: #9D4EDD;
+  --color-epic: #C77DFF;
+  --color-legendary: #FFD700;
+  --color-chaotic: #F72585;
+  --color-aura: #F9F871;
+  --color-gold: #FFD700;
+  --color-coral: #FF6F61;
+  --color-green: #00C9A7;
+  --color-cyan: #00B4D8;
+  --color-fucsia: #F72585;
+  --color-white: #FFFFFF;
+  --color-light: #ECECEC;
+  --color-dark: #1E1E1E;
+  --color-disabled: #AAAAAA;
+  --color-ui-soft: #E0AAFF;
+  --color-shadow-magic: #C77DFF;
+}
+
+body {
+  background: var(--color-bg-main);
+  color: var(--color-white);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
