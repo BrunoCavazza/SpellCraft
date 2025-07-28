@@ -10,70 +10,112 @@ import GameRoom from './components/GameRoom';
 import { Room, Player } from './types';
 import { createRoom, joinRoom, leaveRoom } from './services/roomService';
 
-// Elimina AnimatedBeam y agrega los backgrounds dinámicos:
-
-const PixelBackground: React.FC = () => {
+// Componente de fondo con estrellas animadas
+const StarBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    // Ajusta el tamaño del canvas
-    canvas.width = 2;
-    canvas.height = 2;
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.zIndex = '0';
-    canvas.style.display = 'block';
-    canvas.style.transform = 'scale(2)';
-    canvas.style.pointerEvents = 'none';
-    // Pixel effect
-    class Pixel {
-      x: number;
-      y: number;
-      hue: number;
-      velocity: number;
-      constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-        this.hue = Math.floor(Math.random() * 360);
-        const direction = Math.random() > 0.5 ? -1 : 1;
-        this.velocity = (Math.random() * 30 + 20) * 0.01 * direction;
+
+    // Configuración del canvas
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Función para generar múltiples sombras de estrellas
+    const generateStarShadows = (count: number, maxSize: number) => {
+      const shadows: Array<{x: number, y: number, size: number}> = [];
+      for (let i = 0; i < count; i++) {
+        shadows.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * maxSize + 1
+        });
       }
-      update() {
-        this.hue += this.velocity;
-      }
-      render(ctx: CanvasRenderingContext2D) {
-        const hue = Math.round(this.hue);
-        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-        ctx.fillRect(this.x, this.y, 1, 1);
-      }
-    }
-    const pixels = [
-      new Pixel(0, 0),
-      new Pixel(1, 0),
-      new Pixel(0, 1),
-      new Pixel(1, 1),
-    ];
-    let running = true;
-    function animate() {
-      if (!running) return;
-      pixels.forEach(function(pixel: any) {
-        pixel.update();
-        pixel.render(ctx);
+      return shadows;
+    };
+
+    // Generar estrellas de diferentes tamaños
+    const smallStars = generateStarShadows(700, 1);
+    const mediumStars = generateStarShadows(200, 2);
+    const bigStars = generateStarShadows(100, 3);
+
+    // Variables de animación
+    let smallStarOffset = 0;
+    let mediumStarOffset = 0;
+    let bigStarOffset = 0;
+
+    // Función de animación
+    const animate = () => {
+      // Limpiar canvas
+      ctx.fillStyle = 'rgba(27, 39, 53, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Dibujar estrellas pequeñas
+      ctx.fillStyle = '#FFF';
+      smallStars.forEach(star => {
+        const y = (star.y + smallStarOffset) % (canvas.height + 2000);
+        ctx.fillRect(star.x, y, star.size, star.size);
       });
+
+      // Dibujar estrellas medianas
+      mediumStars.forEach(star => {
+        const y = (star.y + mediumStarOffset) % (canvas.height + 2000);
+        ctx.fillRect(star.x, y, star.size, star.size);
+      });
+
+      // Dibujar estrellas grandes
+      bigStars.forEach(star => {
+        const y = (star.y + bigStarOffset) % (canvas.height + 2000);
+        ctx.fillRect(star.x, y, star.size, star.size);
+      });
+
+      // Actualizar offsets para crear el efecto de movimiento
+      smallStarOffset += 0.5;  // Más rápido
+      mediumStarOffset += 0.3; // Medio
+      bigStarOffset += 0.2;    // Más lento
+
       requestAnimationFrame(animate);
-    }
+    };
+
     animate();
-    return () => { running = false; };
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
   }, []);
+
   return (
-    <canvas ref={canvasRef}></canvas>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: 0,
+      pointerEvents: 'none',
+      background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)'
+    }}>
+      <canvas 
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      />
+    </div>
   );
 };
 
@@ -169,11 +211,10 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <PixelBackground />
+      <StarBackground />
       <div style={{ position: 'relative', zIndex: 1 }}>
         <header className="app-header">
           <h1>✨ SpellCraft ✨</h1>
-          <p>Juego de Mesa Mágico con IA - Multijugador</p>
         </header>
 
         <main className="app-main">
