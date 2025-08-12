@@ -12,8 +12,8 @@ const theme = createTheme({
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#10002B', // Fondo principal
-      paper: '#240046', // Cards, secciones
+      default: '#000000', // Fondo principal negro
+      paper: '#121212', // Cards ligeramente elevadas
     },
     error: {
       main: '#FF6F61', // Coral

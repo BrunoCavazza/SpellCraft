@@ -6,8 +6,8 @@
   --success-color: #00b894;
   --warning-color: #fdcb6e;
   --error-color: #e17055;
-  --background-color: #2d3436;
-  --surface-color: #2d3436;
+  --background-color: #000000;
+  --surface-color: #121212;
   --text-primary: #ffffff;
   --text-secondary: #b2bec3;
   --border-color: #74b9ff;
@@ -30,6 +30,7 @@ body, html, #root, .App {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background-color: #000000 !important;
 }
 
 .app-main, .app-header, .app-footer {
@@ -49,7 +50,7 @@ body, html, #root, .App {
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--background-color);
+  background: #000000;
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
@@ -63,7 +64,7 @@ body {
 
 /* Header */
 .app-header {
-  background: #2d3436;
+  background: #121212;
   padding: 1rem;
   text-align: center;
   box-shadow: 0 4px 20px var(--shadow-color);

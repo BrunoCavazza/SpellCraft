@@ -25,72 +25,74 @@ const StarBackground: React.FC = () => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      const ctxLocal = canvas.getContext('2d');
+      if (ctxLocal) {
+        ctxLocal.fillStyle = '#000000';
+        ctxLocal.fillRect(0, 0, canvas.width, canvas.height);
+      }
     };
     
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Función para generar múltiples sombras de estrellas
-    const generateStarShadows = (count: number, maxSize: number) => {
-      const shadows: Array<{x: number, y: number, size: number}> = [];
+    // Pool fijo de estrellas con reciclado (eficiente y estable)
+    type Star = { x: number; y: number; size: number; speed: number };
+    const stars: Star[] = [];
+    const MAX_STARS = 350; // control de recursos
+
+    const initializeStars = (count: number) => {
+      stars.length = 0;
       for (let i = 0; i < count; i++) {
-        shadows.push({
+        stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * maxSize + 1
+          size: Math.random() < 0.75 ? 1 : 2,
+          speed: 30 + Math.random() * 60, // px/seg
         });
       }
-      return shadows;
     };
 
-    // Generar estrellas de diferentes tamaños
-    const smallStars = generateStarShadows(700, 1);
-    const mediumStars = generateStarShadows(200, 2);
-    const bigStars = generateStarShadows(100, 3);
+    const recycleStarFromTop = (s: Star) => {
+      s.x = Math.random() * canvas.width;
+      s.y = -5 - Math.random() * 40;
+      s.size = Math.random() < 0.75 ? 1 : 2;
+      s.speed = 30 + Math.random() * 60;
+    };
 
-    // Variables de animación
-    let smallStarOffset = 0;
-    let mediumStarOffset = 0;
-    let bigStarOffset = 0;
+    initializeStars(MAX_STARS);
 
-    // Función de animación
-    const animate = () => {
-      // Limpiar canvas
-      ctx.fillStyle = 'rgba(27, 39, 53, 0.1)';
+    // Animación con delta time
+    let animationFrameId: number;
+    let lastTime = performance.now();
+
+    const animate = (time: number) => {
+      const deltaSec = Math.min(0.05, Math.max(0, time - lastTime) / 1000);
+      lastTime = time;
+
+      // Fondo negro sólido
+      ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Dibujar estrellas pequeñas
-      ctx.fillStyle = '#FFF';
-      smallStars.forEach(star => {
-        const y = (star.y + smallStarOffset) % (canvas.height + 2000);
-        ctx.fillRect(star.x, y, star.size, star.size);
-      });
+      // Dibujar y actualizar
+      ctx.fillStyle = '#FFFFFF';
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.y += s.speed * deltaSec;
+        if (s.y > canvas.height + 5) {
+          recycleStarFromTop(s);
+        }
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+      }
 
-      // Dibujar estrellas medianas
-      mediumStars.forEach(star => {
-        const y = (star.y + mediumStarOffset) % (canvas.height + 2000);
-        ctx.fillRect(star.x, y, star.size, star.size);
-      });
-
-      // Dibujar estrellas grandes
-      bigStars.forEach(star => {
-        const y = (star.y + bigStarOffset) % (canvas.height + 2000);
-        ctx.fillRect(star.x, y, star.size, star.size);
-      });
-
-      // Actualizar offsets para crear el efecto de movimiento
-      smallStarOffset += 0.5;  // Más rápido
-      mediumStarOffset += 0.3; // Medio
-      bigStarOffset += 0.2;    // Más lento
-
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     // Cleanup
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
@@ -103,7 +105,7 @@ const StarBackground: React.FC = () => {
       height: '100vh',
       zIndex: 0,
       pointerEvents: 'none',
-      background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)'
+      background: '#000000'
     }}>
       <canvas 
         ref={canvasRef}

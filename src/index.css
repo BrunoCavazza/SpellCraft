@@ -1,6 +1,6 @@
 :root {
-  --color-bg-main: #10002B;
-  --color-bg-card: #240046;
+  --color-bg-main: #000000;
+  --color-bg-card: #121212;
   --color-violet-dark: #3C096C;
   --color-violet: #5A189A;
   --color-violet-light: #7B2CBF;
@@ -22,8 +22,8 @@
   --color-shadow-magic: #C77DFF;
 }
 
-body {
-  background: var(--color-bg-main);
+body, html, #root {
+  background: #000000 !important;
   color: var(--color-white);
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
